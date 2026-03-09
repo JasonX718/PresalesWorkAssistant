@@ -1,0 +1,17 @@
+[
+  {
+    "title": "云主机无法启动 - 常见问题",
+    "content": "问题：云主机显示Starting状态后变为Stopped\n\n原因分析：\n1. 镜像损坏或不兼容\n2. 物理机资源不足\n3. 存储异常（无法读取磁盘）\n4. libvirt/qemu版本问题\n\n排查方法：\n1. 查看管理节点日志：grep 'StartVmInstance' /usr/local/zstack/apache-tomcat/logs/management-server.log\n2. 查看物理机Agent日志：/var/log/zstack/zstack-kvmagent.log\n3. 查看libvirt日志：/var/log/libvirt/qemu/<vm-name>.log\n4. 检查资源：zstack-cli QueryHost fields=uuid,name,totalCpuCapacity,availableCpuCapacity,totalMemoryCapacity,availableMemoryCapacity\n\n解决方案：\n- 镜像问题：重新上传或检查镜像格式\n- 资源不足：迁移其他VM或添加新物理机\n- 存储异常：检查存储连接和空间",
+    "document_type": "troubleshooting"
+  },
+  {
+    "title": "网络不通排查清单",
+    "content": "云主机网络故障排查清单：\n\n第一步：确认问题范围\n- 单个VM还是多个VM？\n- 同网络还是跨网络？\n- 能ping网关吗？\n\n第二步：检查网络基础\n- 物理网络连通性：ping物理机管理IP\n- 网桥状态：brctl show\n- VLAN配置：cat /proc/net/vlan/config\n- IP地址：ip addr show\n\n第三步：检查虚拟网络\n- 虚拟路由器状态\n- DHCP服务：systemctl status dnsmasq\n- 安全组规则：iptables -L -n\n\n第四步：检查云平台配置\n- L2Network关联的物理接口\n- L3Network的IP范围\n- 安全组规则\n- VPC路由表\n\n工具：\n- tcpdump -i br_eth0 -n\n- arp -a\n- route -n",
+    "document_type": "troubleshooting"
+  },
+  {
+    "title": "Ceph存储常见故障处理",
+    "content": "Ceph集群常见故障：\n\n1. OSD异常\n症状：ceph -s显示OSD down\n处理：systemctl restart ceph-osd@{id}\n如果反复crash：检查磁盘SMART信息，可能需要更换磁盘\n\n2. PG不健康\n症状：pg状态不是active+clean\n处理：\n- undersized/degraded: 等待自动恢复\n- inconsistent: ceph pg repair {pgid}\n- stale: 检查相关OSD\n\n3. 空间不足\n症状：nearfull/full标志\n处理：\n- 清理不需要的数据\n- 添加OSD\n- 调整full_ratio（临时）\n\n4. 性能问题\n排查：\n- ceph osd perf\n- ceph osd pool stats\n- iostat检查磁盘IO\n\nZStack集成注意事项：\n- MON地址变更需要在ZStack中同步更新\n- 存储池名称不要随意修改\n- 建议配置独立的存储网络",
+    "document_type": "troubleshooting"
+  }
+]

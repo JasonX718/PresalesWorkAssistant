@@ -1,0 +1,27 @@
+[
+  {
+    "title": "ZStack Cloud支持哪些操作系统",
+    "content": "Q: ZStack Cloud管理节点支持哪些操作系统？\nA: 支持CentOS 7.4+、RHEL 7.x、Kylin V10、UOS V20、openEuler 22.03。推荐使用CentOS 7.9。\n\nQ: ZStack Cloud上的云主机支持哪些Guest OS？\nA: 支持主流Linux发行版（CentOS/Ubuntu/Debian/SUSE等）、Windows Server 2012/2016/2019/2022、Windows 10/11。建议安装virtio驱动以获得最佳性能。",
+    "document_type": "faq"
+  },
+  {
+    "title": "ZStack如何进行数据备份",
+    "content": "Q: 如何备份ZStack管理数据？\nA: 需要备份以下内容：\n1. MySQL数据库：mysqldump -u root zstack > /backup/zstack_$(date +%Y%m%d).sql\n2. 管理节点配置：cp -r /usr/local/zstack/apache-tomcat/webapps/zstack/WEB-INF/classes/zstack.properties /backup/\n3. 重要镜像：通过镜像导出功能\n4. 云主机快照：定期创建自动快照\n\n自动化备份脚本可以通过crontab定时执行。建议每天凌晨执行全量数据库备份。",
+    "document_type": "faq"
+  },
+  {
+    "title": "ZStack端口列表",
+    "content": "Q: ZStack使用哪些网络端口？\nA: 核心端口：\n- 5000: UI端口\n- 8080: API HTTP端口\n- 8443: API HTTPS端口\n- 8888: zstack-dashboard端口\n- 3306: MySQL数据库\n- 5672: RabbitMQ\n- 15672: RabbitMQ管理界面\n- 7272: 管理节点间通信\n\n计算节点端口：\n- 7070: KVM Agent\n- 7069: Console Proxy\n\n这些端口需要在防火墙中放通。建议生产环境配置安全组和网络策略。",
+    "document_type": "faq"
+  },
+  {
+    "title": "ZStack资源查询技巧",
+    "content": "Q: 如何高效使用ZStack查询API？\nA: ZStack查询API支持丰富的过滤条件：\n\n基本查询：\nQueryVmInstance\n\n条件过滤：\nQueryVmInstance state=Running\nQueryVmInstance name~=test（模糊匹配）\nQueryVmInstance cpuNum>4\n\n排序和分页：\nQueryVmInstance sortBy=createDate sortDirection=desc start=0 limit=20\n\n嵌套查询：\nQueryVmInstance vmNics.l3Network.name=public-network\n\n字段选择：\nQueryVmInstance fields=uuid,name,state,cpuNum,memorySize\n\n统计：\nQueryVmInstance count=true\n\n提示：所有Query开头的API都支持以上语法。",
+    "document_type": "faq"
+  },
+  {
+    "title": "ZStack自动化运维实践",
+    "content": "Q: 如何利用ZStack实现自动化运维？\nA: ZStack提供多种自动化方式：\n\n1. RESTful API：所有操作都有对应API，可通过脚本调用\n2. SDK：Python/Java/Go SDK简化API调用\n3. CLI：zstack-cli命令行工具，适合脚本化操作\n4. Webhook：事件驱动的自动化响应\n5. 定时任务：内置定时器支持定期执行任务\n6. Ansible集成：通过Ansible playbook管理ZStack\n\n示例 - 自动扩容脚本：\n当物理机CPU使用率超过80%时，自动创建新云主机或触发告警。",
+    "document_type": "faq"
+  }
+]

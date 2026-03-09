@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Work Assistant</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <span class="logo-text">AI Work Assistant</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">工作台</div>
+                <a class="nav-item active" data-page="dashboard" onclick="showPage('dashboard')">
+                    <span class="nav-icon">📊</span> 概览
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">场景模块</div>
+                <a class="nav-item" data-page="troubleshooting" onclick="showPage('troubleshooting')">
+                    <span class="nav-icon">🔧</span> 技术排查
+                </a>
+                <a class="nav-item" data-page="tech_qa" onclick="showPage('tech_qa')">
+                    <span class="nav-icon">💬</span> 技术问答
+                </a>
+                <a class="nav-item" data-page="customer_reply" onclick="showPage('customer_reply')">
+                    <span class="nav-icon">📨</span> 客户答复
+                </a>
+                <a class="nav-item" data-page="weekly_report" onclick="showPage('weekly_report')">
+                    <span class="nav-icon">📝</span> 周报生成
+                </a>
+                <a class="nav-item" data-page="briefing" onclick="showPage('briefing')">
+                    <span class="nav-icon">📋</span> 汇报生成
+                </a>
+                <a class="nav-item" data-page="training" onclick="showPage('training')">
+                    <span class="nav-icon">🎓</span> 培训生成
+                </a>
+                <a class="nav-item" data-page="demo_prep" onclick="showPage('demo_prep')">
+                    <span class="nav-icon">🖥️</span> 演示准备
+                </a>
+                <a class="nav-item" data-page="poc_support" onclick="showPage('poc_support')">
+                    <span class="nav-icon">🧪</span> PoC 支持
+                </a>
+                <a class="nav-item" data-page="escalation" onclick="showPage('escalation')">
+                    <span class="nav-icon">🚨</span> 问题升级
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">知识库</div>
+                <a class="nav-item" data-page="knowledge" onclick="showPage('knowledge')">
+                    <span class="nav-icon">📚</span> 知识管理
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a class="nav-item" data-page="status" onclick="showPage('status')">
+                <span class="nav-icon">⚙️</span> 系统状态
+            </a>
+        </div>
+    </aside>
+
+    <!-- Mobile toggle -->
+    <button class="mobile-toggle" onclick="toggleSidebar()">☰</button>
+
+    <!-- Main content -->
+    <main class="main-content" id="mainContent">
+
+        <!-- ==================== Dashboard ==================== -->
+        <div class="page active" id="page-dashboard">
+            <div class="page-header">
+                <h1>工作台</h1>
+                <p>选择一个场景模块，快速完成工作任务</p>
+            </div>
+
+            <div class="stats-row" id="dashboardStats">
+                <div class="stat-card">
+                    <div class="stat-value" id="statDocs">-</div>
+                    <div class="stat-label">知识库文档数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statSources">-</div>
+                    <div class="stat-label">数据来源</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">9</div>
+                    <div class="stat-label">场景模块</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">输出模式</div>
+                </div>
+            </div>
+
+            <h2 class="section-title">快速开始</h2>
+            <div class="quick-cards">
+                <div class="quick-card" onclick="showPage('troubleshooting')">
+                    <div class="quick-card-icon">🔧</div>
+                    <div class="quick-card-title">技术排查</div>
+                    <div class="quick-card-desc">快速分析故障，生成排查方案</div>
+                </div>
+                <div class="quick-card" onclick="showPage('tech_qa')">
+                    <div class="quick-card-icon">💬</div>
+                    <div class="quick-card-title">技术问答</div>
+                    <div class="quick-card-desc">准确回答技术问题</div>
+                </div>
+                <div class="quick-card" onclick="showPage('customer_reply')">
+                    <div class="quick-card-icon">📨</div>
+                    <div class="quick-card-title">客户答复</div>
+                    <div class="quick-card-desc">生成专业客户回复</div>
+                </div>
+                <div class="quick-card" onclick="showPage('weekly_report')">
+                    <div class="quick-card-icon">📝</div>
+                    <div class="quick-card-title">周报生成</div>
+                    <div class="quick-card-desc">一键生成周报</div>
+                </div>
+                <div class="quick-card" onclick="showPage('escalation')">
+                    <div class="quick-card-icon">🚨</div>
+                    <div class="quick-card-title">问题升级</div>
+                    <div class="quick-card-desc">整理升级材料</div>
+                </div>
+                <div class="quick-card" onclick="showPage('knowledge')">
+                    <div class="quick-card-icon">📚</div>
+                    <div class="quick-card-title">知识库</div>
+                    <div class="quick-card-desc">管理知识库内容</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== Troubleshooting ==================== -->
+        <div class="page" id="page-troubleshooting">
+            <div class="page-header">
+                <h1>🔧 技术问题排查</h1>
+                <p>快速分析技术故障，输出可执行的排查方案（时限 10 分钟）</p>
+            </div>
+            <div class="form-card">
+                <div class="form-group">
+                    <label>问题描述 <span class="required">*</span></label>
+                    <textarea id="ts-problem" rows="4" placeholder="详细描述问题现象，例如：云主机创建失败，UI提示存储空间不足..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>环境信息</label>
+                        <textarea id="ts-env" rows="3" placeholder="版本、操作系统、集群规模等"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>受影响组件</label>
+                        <input type="text" id="ts-component" placeholder="例如：PrimaryStorage / Ceph">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>错误日志</label>
+                    <textarea id="ts-logs" rows="4" placeholder="粘贴相关错误日志片段"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>紧急程度</label>
+                        <select id="ts-urgency">
+                            <option value="low">低 — 不影响业务</option>
+                            <option value="medium" selected>中 — 部分影响</option>
+                            <option value="high">高 — 严重影响业务</option>
+                            <option value="critical">紧急 — 业务中断</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>输出模式</label>
+                        <select id="ts-mode">
+                            <option value="technical">技术模式</option>
+                            <option value="customer">客户模式</option>
+                            <option value="leadership">领导模式</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="submitTroubleshooting()">开始分析</button>
+            </div>
+            <div class="result-card hidden" id="result-troubleshooting">
+                <div class="result-header">
+                    <h3>分析结果</h3>
+                    <div class="result-meta"><span class="result-time" id="ts-time"></span></div>
+                </div>
+                <div class="result-content" id="ts-result"></div>
+                <button class="btn btn-secondary" onclick="copyResult('ts-result')">复制结果</button>
+            </div>
+        </div>
+
+        <!-- ==================== Tech QA ==================== -->
+        <div class="page" id="page-tech_qa">
+            <div class="page-header">
+                <h1>💬 技术问题回答</h1>
+                <p>快速准确地回答技术问题（时限 3 分钟）</p>
+            </div>
+            <div class="form-card">
+                <div class="form-group">
+                    <label>技术问题 <span class="required">*</span></label>
+                    <textarea id="qa-question" rows="3" placeholder="输入你的技术问题..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>上下文补充</label>
+                        <textarea id="qa-context" rows="2" placeholder="补充背景信息（可选）"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>相关产品</label>
+                        <input type="text" id="qa-product" value="ZStack Cloud" placeholder="ZStack Cloud">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>输出模式</label>
+                    <select id="qa-mode">
+                        <option value="technical">技术模式</option>
+                        <option value="customer">客户模式</option>
+                        <option value="leadership">领导模式</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="submitTechQA()">获取回答</button>
+            </div>
+            <div class="result-card hidden" id="result-tech_qa">
+                <div class="result-header"><h3>回答结果</h3><div class="result-meta"><span class="result-time" id="qa-time"></span></div></div>
+                <div class="result-content" id="qa-result"></div>
+                <button class="btn btn-secondary" onclick="copyResult('qa-result')">复制结果</button>
+            </div>
+        </div>
+
+        <!-- ==================== Customer Reply ==================== -->
+        <div class="page" id="page-customer_reply">
+            <div class="page-header">
+                <h1>📨 客户答复</h1>
+                <p>生成专业、得体的客户沟通回复</p>
+            </div>
+            <div class="form-card">
+                <div class="form-group">
+                    <label>客户问题 <span class="required">*</span></label>
+                    <textarea id="cr-question" rows="4" placeholder="客户原始问题或需求..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>背景信息</label>
+                        <textarea id="cr-context" rows="2" placeholder="客户行业、规模、技术背景等"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>相关产品</label>
+                        <input type="text" id="cr-product" value="ZStack Cloud">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="submitCustomerReply()">生成回复</button>
+            </div>
+            <div class="result-card hidden" id="result-customer_reply">
+                <div class="result-header"><h3>客户回复</h3><div class="result-meta"><span class="result-time" id="cr-time"></span></div></div>
+                <div class="result-content" id="cr-result"></div>
+                <button class="btn btn-secondary" onclick="copyResult('cr-result')">复制结果</button>
+            </div>
+        </div>
+
+        <!-- ==================== Weekly Report ==================== -->
+        <div class="page" id="page-weekly_report">
+            <div class="page-header">
+                <h1>📝 周报生成</h1>
+                <p>输入工作条目，自动生成结构化周报（时限 5 分钟）</p>
+            </div>
+            <div class="form-card">
+                <div class="form-group">
+                    <label>本周完成工作</label>
+                    <textarea id="wr-tasks" rows="4" placeholder="每行一条，例如：&#10;完成客户A的PoC部署&#10;处理了3个技术工单&#10;编写Ceph最佳实践文档"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>关键成果</label>
+                    <textarea id="wr-results" rows="3" placeholder="每行一条，量化描述成果"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>当前问题与风险</label>
+                    <textarea id="wr-issues" rows="3" placeholder="每行一条"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>下周计划</label>
+                    <textarea id="wr-plan" rows="3" placeholder="每行一条"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>周报版本</label>
+                    <select id="wr-version">
+                        <option value="standard">标准版 — 完整结构化</option>
+                        <option value="leadership" selected>领导版 — 精简汇总</option>
+                        <option value="technical">技术版 — 含技术细节</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="submitWeeklyReport()">生成周报</button>
+            </div>
+            <div class="result-card hidden" id="result-weekly_report">
+                <div class="result-header"><h3>周报</h3><div class="result-meta"><span class="result-time" id="wr-time"></span></div></div>
+                <div class="result-content" id="wr-result"></div>
+                <button class="btn btn-secondary" onclick="copyResult('wr-result')">复制结果</button>
+            </div>
+        </div>
+
+        <!-- ==================== Briefing ==================== -->
+        <div class="page" id="page-briefing">
+            <div class="page-header">
+                <h1>📋 汇报生成</h1>
+                <p>生成结构化汇报 / PPT 材料（时限 15 分钟）</p>
+            </div>
+            <div class="form-card">
+                <div class="form-group">
+                    <label>汇报主题 <span class="required">*</span></label>
+                    <input type="text" id="br-topic" placeholder="例如：ZStack私有云方案在制造业的应用">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>目标受众</label>
+                        <input type="text" id="br-audience" placeholder="例如：客户CTO和IT总监">
+                    </div>
+                    <div class="form-group">
+                        <label>时间限制（分钟）</label>
+                        <input type="number" id="br-time" value="30" min="5" max="120">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>汇报目标</label>
+                    <textarea id="br-goal" rows="2" placeholder="例如：说服客户选择ZStack替换VMware"></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="submitBriefing()">生成汇报材料</button>
+            </div>
+            <div class="result-card hidden" id="result-briefing">
+                <div class="result-header"><h3>汇报材料</h3><div class="result-meta"><span class="result-time" id="br-rtime"></span></div></div>
+                <div class="result-content" id="br-result"></div>
+                <button class="btn btn-secondary" onclick="copyResult('br-result')">复制结果</button>
+            </div>
+        </div>
+
+        <!-- ==================== Training ==================== -->
+        <div class="page" id="page-training">
+            <div class="page-header">
+                <h1>🎓 培训生成</h1>
+                <p>生成结构化培训课程内容</p>
+            </div>
+            <div class="form-card">
+                <div class="form-group">
+                    <label>培训主题 <span class="required">*</span></label>
+                    <input type="text" id="tr-topic" placeholder="例如：ZStack Cloud网络架构与VPC配置">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>学员水平</label>
+                        <select id="tr-level">
+                            <option value="beginner">入门</option>
+                            <option value="intermediate" selected>中级</option>
+                            <option value="advanced">高级</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>培训时长（分钟）</label>
+                        <input type="number" id="tr-duration" value="60" min="15" max="480">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="submitTraining()">生成培训内容</button>
+            </div>
+            <div class="result-card hidden" id="result-training">
+                <div class="result-header"><h3>培训材料</h3><div class="result-meta"><span class="result-time" id="tr-time"></span></div></div>
+                <div class="result-content" id="tr-result"></div>
+                <button class="btn btn-secondary" onclick="copyResult('tr-result')">复制结果</button>
+            </div>
+        </div>
+
+        <!-- ==================== Demo Prep ==================== -->
+        <div class="page" id="page-demo_prep">
+            <div class="page-header">
+                <h1>🖥️ 演示准备</h1>
+                <p>生成产品演示方案与检查清单</p>
+            </div>
+            <div class="form-card">
+                <div class="form-group">
+                    <label>演示产品 <span class="required">*</span></label>
+                    <input type="text" id="dp-product" value="ZStack Cloud">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>演示场景</label>
+                        <input type="text" id="dp-scenario" placeholder="例如：VPC网络隔离与安全组">
+                    </div>
+                    <div class="form-group">
+                        <label>目标受众</label>
+                        <input type="text" id="dp-audience" placeholder="例如：客户IT架构师">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>时间限制（分钟）</label>
+                    <input type="number" id="dp-time" value="30" min="5" max="120">
+                </div>
+                <button class="btn btn-primary" onclick="submitDemoPrep()">生成演示方案</button>
+            </div>
+            <div class="result-card hidden" id="result-demo_prep">
+                <div class="result-header"><h3>演示方案</h3><div class="result-meta"><span class="result-time" id="dp-rtime"></span></div></div>
+                <div class="result-content" id="dp-result"></div>
+                <button class="btn btn-secondary" onclick="copyResult('dp-result')">复制结果</button>
+            </div>
+        </div>
+
+        <!-- ==================== PoC Support ==================== -->
+        <div class="page" id="page-poc_support">
+            <div class="page-header">
+                <h1>🧪 PoC 支持</h1>
+                <p>制定 PoC 验证计划与实施方案</p>
+            </div>
+            <div class="form-card">
+                <div class="form-group">
+                    <label>客户需求 <span class="required">*</span></label>
+                    <textarea id="poc-req" rows="4" placeholder="详细描述客户的验证需求..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>产品范围</label>
+                        <input type="text" id="poc-scope" value="ZStack Cloud Enterprise">
+                    </div>
+                    <div class="form-group">
+                        <label>约束条件</label>
+                        <textarea id="poc-constraints" rows="2" placeholder="时间、硬件、人员等限制"></textarea>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="submitPoC()">生成 PoC 方案</button>
+            </div>
+            <div class="result-card hidden" id="result-poc_support">
+                <div class="result-header"><h3>PoC 方案</h3><div class="result-meta"><span class="result-time" id="poc-time"></span></div></div>
+                <div class="result-content" id="poc-result"></div>
+                <button class="btn btn-secondary" onclick="copyResult('poc-result')">复制结果</button>
+            </div>
+        </div>
+
+        <!-- ==================== Escalation ==================== -->
+        <div class="page" id="page-escalation">
+            <div class="page-header">
+                <h1>🚨 问题升级</h1>
+                <p>整理标准化升级材料，便于高级支持接手（时限 10 分钟）</p>
+            </div>
+            <div class="form-card">
+                <div class="form-group">
+                    <label>问题描述 <span class="required">*</span></label>
+                    <textarea id="esc-problem" rows="3" placeholder="描述需要升级的问题..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>环境信息</label>
+                        <textarea id="esc-env" rows="2" placeholder="版本、架构、规模等"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>相关日志</label>
+                        <textarea id="esc-logs" rows="2" placeholder="关键错误日志"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>已尝试的操作</label>
+                    <textarea id="esc-actions" rows="4" placeholder="每行一条已执行的排查操作..."></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="submitEscalation()">生成升级材料</button>
+            </div>
+            <div class="result-card hidden" id="result-escalation">
+                <div class="result-header"><h3>升级材料</h3><div class="result-meta"><span class="result-time" id="esc-time"></span></div></div>
+                <div class="result-content" id="esc-result"></div>
+                <button class="btn btn-secondary" onclick="copyResult('esc-result')">复制结果</button>
+            </div>
+        </div>
+
+        <!-- ==================== Knowledge Management ==================== -->
+        <div class="page" id="page-knowledge">
+            <div class="page-header">
+                <h1>📚 知识库管理</h1>
+                <p>搜索、导入和管理知识库内容</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="showKnowledgeTab('search')">搜索知识库</button>
+                <button class="tab" onclick="showKnowledgeTab('upload')">上传文件</button>
+                <button class="tab" onclick="showKnowledgeTab('url')">导入网页</button>
+                <button class="tab" onclick="showKnowledgeTab('docs')">文档列表</button>
+            </div>
+
+            <!-- Search Tab -->
+            <div class="knowledge-tab active" id="ktab-search">
+                <div class="form-card">
+                    <div class="form-group">
+                        <label>搜索关键词</label>
+                        <div class="input-with-btn">
+                            <input type="text" id="kb-query" placeholder="输入搜索内容..." onkeydown="if(event.key==='Enter')searchKnowledge()">
+                            <button class="btn btn-primary" onclick="searchKnowledge()">搜索</button>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>文档类型（可选）</label>
+                            <select id="kb-doctype">
+                                <option value="">全部</option>
+                                <option value="faq">FAQ</option>
+                                <option value="troubleshooting">故障排查</option>
+                                <option value="architecture">架构文档</option>
+                                <option value="deployment">部署文档</option>
+                                <option value="api">API文档</option>
+                                <option value="operations">运维文档</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>返回数量</label>
+                            <input type="number" id="kb-topk" value="5" min="1" max="20">
+                        </div>
+                    </div>
+                </div>
+                <div id="kb-search-results"></div>
+            </div>
+
+            <!-- Upload Tab -->
+            <div class="knowledge-tab" id="ktab-upload">
+                <div class="form-card">
+                    <div class="form-group">
+                        <label>选择文件</label>
+                        <div class="file-upload-area" id="fileDropZone">
+                            <input type="file" id="kb-file" multiple accept=".md,.txt,.html,.htm,.json,.yaml,.yml,.csv,.rst" onchange="handleFileSelect(event)">
+                            <p>点击选择文件或拖拽到此处</p>
+                            <p class="hint">支持格式：.md .txt .html .json .yaml .csv .rst</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>文档类型</label>
+                        <input type="text" id="kb-upload-type" value="general" placeholder="例如：faq, deployment, architecture">
+                    </div>
+                    <button class="btn btn-primary" onclick="uploadFiles()">上传并导入</button>
+                    <div id="upload-status"></div>
+                </div>
+            </div>
+
+            <!-- URL Tab -->
+            <div class="knowledge-tab" id="ktab-url">
+                <div class="form-card">
+                    <div class="form-group">
+                        <label>网页地址</label>
+                        <textarea id="kb-urls" rows="4" placeholder="每行一个 URL，例如：&#10;https://www.zstack.io/help/product_manuals/&#10;https://www.zstack.io/help/tutorials/"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>文档类型</label>
+                            <input type="text" id="kb-url-type" value="web">
+                        </div>
+                        <div class="form-group">
+                            <label>选项</label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="kb-url-refresh"> 强制刷新（覆盖已导入内容）
+                            </label>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="importURLs()">导入网页</button>
+                    <div id="url-status"></div>
+                </div>
+            </div>
+
+            <!-- Documents List Tab -->
+            <div class="knowledge-tab" id="ktab-docs">
+                <div class="form-card" style="margin-bottom: 16px">
+                    <div class="form-row" style="align-items:center">
+                        <button class="btn btn-primary" onclick="loadDocuments()">刷新列表</button>
+                        <button class="btn btn-secondary" onclick="bootstrapKnowledge()">初始化知识库（Bootstrap）</button>
+                    </div>
+                </div>
+                <div id="kb-doc-list"></div>
+            </div>
+        </div>
+
+        <!-- ==================== Status ==================== -->
+        <div class="page" id="page-status">
+            <div class="page-header">
+                <h1>⚙️ 系统状态</h1>
+                <p>查看系统运行状态和知识库统计</p>
+            </div>
+            <div class="form-card">
+                <button class="btn btn-primary" onclick="loadSystemStatus()">刷新状态</button>
+            </div>
+            <div id="system-status-info"></div>
+        </div>
+
+    </main>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay hidden" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>AI 正在处理中，请稍候...</p>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast hidden" id="toast"></div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

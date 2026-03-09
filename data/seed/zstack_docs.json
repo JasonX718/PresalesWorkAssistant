@@ -1,0 +1,27 @@
+[
+  {
+    "title": "ZStack Cloud产品概述",
+    "content": "ZStack Cloud是一款产品化的私有云管理平台，基于全新的IaaS架构设计，具有简单易用、高可靠、高性能等特点。ZStack Cloud支持KVM和VMware虚拟化，提供计算、网络、存储、安全等全栈云服务。核心特性包括：4秒创建云主机、30分钟完成部署、全API设计、无状态微服务架构、级联消息总线。",
+    "document_type": "overview"
+  },
+  {
+    "title": "ZStack Cloud核心功能清单",
+    "content": "ZStack Cloud核心功能：\n1. 计算管理：云主机生命周期管理、在线变配、在线迁移、GPU虚拟化、亲和组\n2. 存储管理：本地存储、NFS、Ceph、SharedBlock、SAN存储、精简配置、快照、克隆\n3. 网络管理：扁平网络、VPC网络、安全组、EIP、端口转发、负载均衡、VPN\n4. 镜像管理：多格式支持、自动转换、模板管理\n5. 运维管理：监控告警、自动化运维、审计日志、批量操作\n6. 多租户：账户体系、资源配额、权限策略\n7. 高可用：管理节点HA、计算节点HA、存储多副本\n8. 混合云：对接公有云、跨云迁移（企业高级版）",
+    "document_type": "overview"
+  },
+  {
+    "title": "ZStack技术白皮书 - 架构优势",
+    "content": "ZStack独特的架构优势：\n\n1. 无状态微服务架构\n管理节点完全无状态，所有状态存储在数据库中。支持水平扩展和故障自动切换。\n\n2. 异步消息总线\n所有组件间通信基于异步消息，避免了同步调用的性能瓶颈和级联故障。\n\n3. 无锁架构\n使用乐观锁和队列机制替代传统的互斥锁，支持高并发操作。\n\n4. 工作流引擎\n所有长时间操作基于工作流引擎，支持自动回滚和错误恢复。\n\n5. 插件化设计\n核心引擎+插件的架构，支持灵活扩展新功能。\n\n6. 全API覆盖\n所有功能通过API暴露，支持深度自动化集成。",
+    "document_type": "whitepaper"
+  },
+  {
+    "title": "ZStack Cloud 安装前准备",
+    "content": "安装前环境准备：\n\n操作系统要求：\n- CentOS 7.4+（推荐7.9）\n- Kylin V10\n- UOS V20\n- openEuler 22.03\n\n硬件要求（管理节点）：\n- CPU: 4核以上\n- 内存: 8GB以上（推荐16GB）\n- 磁盘: 100GB以上（推荐SSD）\n- 网卡: 千兆以上\n\n网络要求：\n- 管理节点和计算节点网络互通\n- 关闭防火墙或放通必要端口\n- 配置NTP时间同步\n\n其他要求：\n- 关闭SELinux\n- 配置yum源\n- 确保SSH正常",
+    "document_type": "deployment"
+  },
+  {
+    "title": "ZStack 常见面试题及答案",
+    "content": "Q: ZStack的核心架构是什么？\nA: ZStack采用无状态微服务+异步消息总线架构。核心组件包括管理节点（MN）、消息总线（RabbitMQ）、数据库（MySQL）、计算节点（KVM Agent）。\n\nQ: ZStack如何实现高可用？\nA: 多层次HA：管理节点双活+HAProxy+Keepalived；计算节点故障自动迁移；存储三副本（Ceph）；网络服务HA。\n\nQ: ZStack与OpenStack的主要区别？\nA: ZStack架构更简洁、部署更快（30分钟 vs 数天）、运维更简单、性能更好（4秒创建VM）。OpenStack功能更全但复杂度高。\n\nQ: ZStack支持的存储类型？\nA: 本地存储、NFS、Ceph RBD、iSCSI SAN、FC SAN、SharedBlock。推荐生产环境使用Ceph。",
+    "document_type": "faq"
+  }
+]
