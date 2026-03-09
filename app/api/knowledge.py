@@ -226,10 +226,10 @@ def api_bootstrap():
 # =============================================================================
 
 @router.get("/documents")
-def api_get_documents():
-    """List all document sources in the knowledge base."""
+def api_get_documents(limit: int = 0, offset: int = 0):
+    """List document sources. Supports pagination via limit/offset."""
     try:
-        documents = get_documents()
+        documents = get_documents(limit=limit, offset=offset)
         return {
             "total": len(documents),
             "documents": documents,

@@ -71,6 +71,18 @@ SCENARIO_KEYWORDS = {
 }
 
 
+# Cached module instances (avoid creating new OpenAI client per request)
+_module_instances: dict = {}
+
+
+def _get_module(scenario_type: ScenarioType):
+    if scenario_type not in _module_instances:
+        module_class = SCENARIO_MODULES.get(scenario_type)
+        if module_class:
+            _module_instances[scenario_type] = module_class()
+    return _module_instances.get(scenario_type)
+
+
 def detect_scenario(text: str) -> Optional[ScenarioType]:
     """
     Auto-detect scenario type from user input text using keyword matching.
@@ -139,16 +151,12 @@ def route_scenario(
     input_data: dict,
     output_mode: OutputMode = OutputMode.TECHNICAL,
 ) -> ScenarioResult:
-    """
-    Route to the appropriate scenario module and execute.
-    """
-    module_class = SCENARIO_MODULES.get(scenario_type)
-    if not module_class:
+    module = _get_module(scenario_type)
+    if not module:
         return ScenarioResult(
             scenario=scenario_type,
             output_mode=output_mode,
             content=f"未知场景类型: {scenario_type.value}",
         )
 
-    module = module_class()
     return module.execute(input_data, output_mode)

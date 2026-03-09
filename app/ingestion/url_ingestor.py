@@ -8,6 +8,7 @@ Fetches, cleans, chunks, embeds, and stores web content.
 import logging
 from typing import Optional
 from datetime import datetime
+import asyncio
 
 import httpx
 
@@ -158,16 +159,29 @@ async def ingest_urls(
     urls: list[str],
     document_type: str = "web",
     force_refresh: bool = False,
+    max_concurrency: int = 5,
 ) -> IngestResponse:
-    """Ingest multiple URLs."""
+    """Ingest multiple URLs concurrently."""
     combined = IngestResponse()
+    semaphore = asyncio.Semaphore(max_concurrency)
 
-    for url in urls:
-        result = await ingest_url(url, document_type, force_refresh)
-        combined.total_chunks += result.total_chunks
-        combined.new_chunks += result.new_chunks
-        combined.duplicate_skipped += result.duplicate_skipped
-        combined.errors.extend(result.errors)
-        combined.sources_processed.extend(result.sources_processed)
+    async def _limited_ingest(url: str) -> IngestResponse:
+        async with semaphore:
+            return await ingest_url(url, document_type, force_refresh)
+
+    results = await asyncio.gather(
+        *[_limited_ingest(url) for url in urls],
+        return_exceptions=True,
+    )
+
+    for i, result in enumerate(results):
+        if isinstance(result, Exception):
+            combined.errors.append(f"{urls[i]}: {str(result)}")
+        else:
+            combined.total_chunks += result.total_chunks
+            combined.new_chunks += result.new_chunks
+            combined.duplicate_skipped += result.duplicate_skipped
+            combined.errors.extend(result.errors)
+            combined.sources_processed.extend(result.sources_processed)
 
     return combined

@@ -56,10 +56,10 @@ def search_knowledge(request: KnowledgeSearchRequest) -> KnowledgeSearchResponse
     )
 
 
-def get_documents() -> list[dict]:
+def get_documents(limit: int = 0, offset: int = 0) -> list[dict]:
     """Get all document sources in the knowledge base."""
     store = get_vector_store()
-    return store.get_all_sources()
+    return store.get_all_sources(limit=limit, offset=offset)
 
 
 def delete_document(source: str) -> dict:

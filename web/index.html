@@ -73,6 +73,9 @@
     <!-- Mobile toggle -->
     <button class="mobile-toggle" onclick="toggleSidebar()">☰</button>
 
+    <!-- API Key button (top-right) -->
+    <button class="api-key-btn" onclick="showApiKeyPrompt()" title="设置 API Key">🔑</button>
+
     <!-- Main content -->
     <main class="main-content" id="mainContent">
 
@@ -595,6 +598,7 @@
     <!-- Toast -->
     <div class="toast hidden" id="toast"></div>
 
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="/static/app.js"></script>
 </body>
 </html>

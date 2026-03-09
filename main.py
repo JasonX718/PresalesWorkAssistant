@@ -112,6 +112,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Authentication Middleware
+from app.auth import APIKeyAuthMiddleware
+app.add_middleware(APIKeyAuthMiddleware)
+
+if settings.auth_api_key:
+    logger.info("API Key authentication ENABLED")
+else:
+    logger.info("API Key authentication DISABLED (no AUTH_API_KEY set)")
+
 # =============================================================================
 # Register Routers
 # =============================================================================

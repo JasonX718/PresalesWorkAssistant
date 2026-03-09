@@ -139,8 +139,13 @@ class VectorStore:
             logger.error(f"Delete error: {e}")
         return 0
 
-    def get_all_sources(self) -> list[dict]:
-        """Get information about all unique sources in the store."""
+    def get_all_sources(self, limit: int = 0, offset: int = 0) -> list[dict]:
+        """Get information about all unique sources in the store.
+
+        Args:
+            limit: Max number of sources to return (0 = all).
+            offset: Number of sources to skip (for pagination).
+        """
         try:
             all_data = self._collection.get(include=["metadatas"])
             if not all_data or not all_data["metadatas"]:
@@ -159,7 +164,14 @@ class VectorStore:
                     }
                 sources[src]["chunk_count"] += 1
 
-            return list(sources.values())
+            all_sources = list(sources.values())
+
+            if offset:
+                all_sources = all_sources[offset:]
+            if limit > 0:
+                all_sources = all_sources[:limit]
+
+            return all_sources
         except Exception as e:
             logger.error(f"Error getting sources: {e}")
             return []
@@ -180,18 +192,42 @@ class VectorStore:
             return False
 
     def get_ids_by_hashes(self, content_hashes: list[str]) -> set[str]:
-        """Get existing content hashes to detect duplicates."""
+        """Get existing content hashes to detect duplicates (batched)."""
+        if not content_hashes:
+            return set()
+
         existing = set()
         try:
+            batch_size = 50
+            for i in range(0, len(content_hashes), batch_size):
+                batch = content_hashes[i:i + batch_size]
+                if len(batch) == 1:
+                    results = self._collection.get(
+                        where={"content_hash": batch[0]},
+                        include=["metadatas"],
+                    )
+                else:
+                    results = self._collection.get(
+                        where={"content_hash": {"$in": batch}},
+                        include=["metadatas"],
+                    )
+                if results and results["metadatas"]:
+                    for meta in results["metadatas"]:
+                        h = meta.get("content_hash")
+                        if h:
+                            existing.add(h)
+        except Exception as e:
+            logger.warning(f"Batch hash lookup failed, falling back to single: {e}")
             for h in content_hashes:
-                results = self._collection.get(
-                    where={"content_hash": h},
-                    limit=1,
-                )
-                if results and results["ids"]:
-                    existing.add(h)
-        except Exception:
-            pass
+                try:
+                    results = self._collection.get(
+                        where={"content_hash": h},
+                        limit=1,
+                    )
+                    if results and results["ids"]:
+                        existing.add(h)
+                except Exception:
+                    pass
         return existing
 
 

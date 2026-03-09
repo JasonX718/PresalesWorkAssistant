@@ -5,6 +5,27 @@
 const API = '';  // Same origin — no prefix needed
 
 // ============================================================================
+// API Key Management
+// ============================================================================
+
+function getApiKey() {
+    return localStorage.getItem('ai_assistant_api_key') || '';
+}
+
+function setApiKey(key) {
+    localStorage.setItem('ai_assistant_api_key', key);
+}
+
+function showApiKeyPrompt() {
+    const current = getApiKey();
+    const key = prompt('请输入 API Key（如未设置认证则留空）:', current);
+    if (key !== null) {
+        setApiKey(key);
+        showToast('API Key 已保存', 'success');
+    }
+}
+
+// ============================================================================
 // Page Navigation
 // ============================================================================
 
@@ -57,10 +78,11 @@ function showToast(message, type = '') {
 function copyResult(elementId) {
     const el = document.getElementById(elementId);
     if (!el) return;
-    navigator.clipboard.writeText(el.textContent).then(() => {
+    const content = el.querySelector('.result-content');
+    const raw = content ? (content.getAttribute('data-raw') || content.textContent) : el.textContent;
+    navigator.clipboard.writeText(raw).then(() => {
         showToast('已复制到剪贴板', 'success');
     }).catch(() => {
-        // Fallback
         const range = document.createRange();
         range.selectNodeContents(el);
         const sel = window.getSelection();
@@ -77,12 +99,17 @@ function textToLines(text) {
 }
 
 async function apiCall(method, path, body = null) {
-    const opts = {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-    };
+    const headers = { 'Content-Type': 'application/json' };
+    const apiKey = getApiKey();
+    if (apiKey) headers['X-API-Key'] = apiKey;
+
+    const opts = { method, headers };
     if (body) opts.body = JSON.stringify(body);
     const resp = await fetch(API + path, opts);
+    if (resp.status === 401 || resp.status === 403) {
+        showToast('API Key 无效或缺失，请点击右上角设置', 'error');
+        throw new Error('认证失败');
+    }
     if (!resp.ok) {
         const err = await resp.json().catch(() => ({ detail: resp.statusText }));
         throw new Error(err.detail || 'Request failed');
@@ -90,11 +117,23 @@ async function apiCall(method, path, body = null) {
     return resp.json();
 }
 
+function renderMarkdown(text) {
+    if (typeof marked !== 'undefined') {
+        try {
+            return marked.parse(text);
+        } catch (e) {
+            return '<pre>' + escHtml(text) + '</pre>';
+        }
+    }
+    return '<pre>' + escHtml(text) + '</pre>';
+}
+
 function showResult(sectionId, content, timeSeconds) {
     const card = document.getElementById('result-' + sectionId);
     card.classList.remove('hidden');
     const resultEl = card.querySelector('.result-content');
-    resultEl.textContent = content;
+    resultEl.setAttribute('data-raw', content);
+    resultEl.innerHTML = renderMarkdown(content);
     const timeEl = card.querySelector('.result-time');
     if (timeEl) timeEl.textContent = `耗时 ${timeSeconds}s`;
     card.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -380,8 +419,13 @@ async function uploadFiles() {
             formData.append('file', file);
             formData.append('document_type', docType);
 
+            const fetchHeaders = {};
+            const apiKey = getApiKey();
+            if (apiKey) fetchHeaders['X-API-Key'] = apiKey;
+
             const resp = await fetch(API + '/knowledge/ingest/upload', {
                 method: 'POST',
+                headers: fetchHeaders,
                 body: formData,
             });
             if (!resp.ok) throw new Error((await resp.json()).detail || resp.statusText);

@@ -26,6 +26,9 @@ class Settings(BaseSettings):
     app_debug: bool = True
     log_level: str = "INFO"
 
+    # --- Auth ---
+    auth_api_key: str = ""  # If set, all API requests must include this key
+
     # --- Knowledge Base ---
     chunk_size: int = 800
     chunk_overlap: int = 200
