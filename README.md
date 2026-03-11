@@ -19,6 +19,11 @@ AI Work Assistant 是一个基于 RAG（检索增强生成）的智能工作助�
 
 ```
 ┌─────────────────────────────────────────────────┐
+│          Web Frontend (SPA — HTML/CSS/JS)        │
+│  工作台 │ 9场景表单 │ 知识库管理 │ 系统状态      │
+├─────────────────────────────────────────────────┤
+│          Auth Middleware (API Key)                │
+├─────────────────────────────────────────────────┤
 │                 API Layer (FastAPI)               │
 │  /knowledge/*  │  /scenario/*  │  /health        │
 ├─────────────────────────────────────────────────┤
@@ -65,19 +70,29 @@ cp .env.example .env
 
 # 编辑 .env，填入 OpenAI API Key
 # OPENAI_API_KEY=sk-your-key-here
+
+# （可选）设置访问密钥，保护 API 不被未授权访问
+# AUTH_API_KEY=your-secret-key
 ```
 
 ### 3. 启动服务
 
 ```bash
-# 启动 API 服务
+# 启动服务（同时提供 API 和 Web 前端）
 python main.py
-
-# 服务启动后访问:
-# API: http://localhost:8000
-# 文档: http://localhost:8000/docs
-# Swagger: http://localhost:8000/redoc
 ```
+
+启动后可访问以下地址：
+
+| 地址 | 说明 |
+|------|------|
+| http://localhost:8000 | **Web 前端界面**（日常使用入口） |
+| http://localhost:8000/ui | Web 前端界面（同上） |
+| http://localhost:8000/docs | Swagger API 交互文档 |
+| http://localhost:8000/redoc | ReDoc API 文档 |
+| http://localhost:8000/health | 健康检查 |
+
+> **提示**：如果配置了 `AUTH_API_KEY`，打开 Web 界面后点击右上角 🔑 按钮输入密钥即可正常使用。
 
 ### 4. 初始化知识库
 
@@ -102,15 +117,21 @@ python examples/example_requests.py
 
 ```
 ai-work-assistant/
-├── main.py                          # 应用入口
+├── main.py                          # 应用入口（API + 前端静态服务）
 ├── config.py                        # 全局配置
 ├── requirements.txt                 # Python 依赖
 ├── .env.example                     # 环境变量模板
 ├── .gitignore
 │
+├── web/                             # Web 前端（SPA）
+│   ├── index.html                   # 主页面
+│   ├── style.css                    # 样式
+│   └── app.js                       # 前端逻辑
+│
 ├── app/
+│   ├── auth.py                      # API Key 认证中间件
 │   ├── api/                         # FastAPI 路由
-│   │   ├── knowledge.py             # 知识库 API
+│   │   ├── knowledge.py             # 知识库 API（含文件上传）
 │   │   ├── scenarios.py             # 场景模块 API
 │   │   └── health.py                # 健康检查
 │   │
@@ -182,12 +203,13 @@ ai-work-assistant/
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| POST | `/knowledge/ingest/file` | 导入本地文件 |
+| POST | `/knowledge/ingest/file` | 导入本地文件（服务器路径） |
+| POST | `/knowledge/ingest/upload` | 浏览器上传文件 |
 | POST | `/knowledge/ingest/url` | 导入 URL 内容 |
 | POST | `/knowledge/bootstrap` | 初始化知识库（~1000条） |
 | POST | `/knowledge/refresh/url` | 刷新 URL 内容 |
 | GET/POST | `/knowledge/search` | 搜索知识库 |
-| GET | `/knowledge/documents` | 列出所有文档 |
+| GET | `/knowledge/documents` | 列出所有文档（支持分页） |
 | GET | `/knowledge/stats` | 知识库统计 |
 | DELETE | `/knowledge/document/{source}` | 删除文档 |
 
@@ -363,11 +385,49 @@ curl -X POST http://localhost:8000/knowledge/bootstrap
 └───────────────┘  cosine距离, HNSW索引
 ```
 
+## Web 前端
+
+系统内置一个 SPA 前端，启动后通过浏览器直接访问 `http://localhost:8000` 即可使用，无需额外构建步骤。
+
+前端包含：
+
+- **工作台** — 概览面板 + 快速跳转
+- **9 个场景模块表单** — 填写参数后一键生成，结果以 Markdown 渲染展示
+- **知识库管理** — 搜索、上传文件、导入网页、查看文档列表、一键 Bootstrap
+- **系统状态** — 查看服务运行状态、知识库统计、OpenAI 配置状态
+
+### 前端访问认证
+
+如果在 `.env` 中配置了 `AUTH_API_KEY`，所有 API 请求都需要携带密钥：
+
+- **Web 界面**：点击右上角 🔑 按钮输入密钥（自动保存到浏览器 localStorage）
+- **curl / SDK**：通过 Header 传递 `X-API-Key: your-key` 或 Query 参数 `?api_key=your-key`
+
+```bash
+# 启用认证的 curl 示例
+curl -X POST http://localhost:8000/scenario/tech_qa \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: your-secret-key" \
+  -d '{"question": "ZStack支持哪些存储方案？"}'
+```
+
+> 不设置 `AUTH_API_KEY` 则无需认证，适合本地开发使用。生产环境强烈建议配置。
+
+## 云服务器部署
+
+如需将系统部署到云服务器通过公网访问，参考 [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)，包含：
+
+- Systemd 服务管理
+- Nginx 反向代理 + SSL
+- 防火墙 & 安全组配置
+- ZStack 内部文档接入方式
+
 ## 技术栈
 
 | 组件 | 技术 | 说明 |
 |------|------|------|
-| Web框架 | FastAPI | 异步高性能 API |
+| Web框架 | FastAPI | 异步高性能 API + 静态文件服务 |
+| 前端 | HTML/CSS/JS + marked.js | 内置 SPA，无需构建 |
 | 向量数据库 | ChromaDB | 轻量级向量存储 |
 | LLM | OpenAI GPT-4o | 生成结构化内容 |
 | Embedding | text-embedding-3-small | 1536维文本向量 |
