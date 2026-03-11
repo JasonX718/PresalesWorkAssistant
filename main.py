@@ -138,6 +138,7 @@ WEB_DIR = Path(__file__).resolve().parent / "web"
 
 if WEB_DIR.is_dir():
     @app.get("/ui", include_in_schema=False)
+    @app.get("/ui/", include_in_schema=False)
     @app.get("/", include_in_schema=False)
     async def serve_ui():
         """Serve the web frontend SPA."""

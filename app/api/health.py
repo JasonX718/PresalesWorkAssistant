@@ -23,6 +23,7 @@ def health_check():
 
     return {
         "status": "running",
+        "auth_required": bool(settings.auth_api_key),
         "vector_db": {
             "status": db_status,
             "document_count": doc_count,

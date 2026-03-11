@@ -587,6 +587,21 @@
 
     </main>
 
+    <!-- Auth Modal -->
+    <div class="auth-modal hidden" id="authModal">
+        <div class="auth-modal-content">
+            <div class="auth-modal-icon">🔐</div>
+            <h2>需要认证</h2>
+            <p>此系统已启用 API Key 认证，请输入密钥以继续使用。</p>
+            <div class="auth-input-group">
+                <input type="password" id="authKeyInput" placeholder="请输入 API Key" onkeydown="if(event.key==='Enter')submitAuthKey()">
+                <button class="btn btn-primary" onclick="submitAuthKey()">确认</button>
+            </div>
+            <div class="auth-error hidden" id="authError">API Key 无效，请重新输入</div>
+            <div class="auth-hint">密钥由系统管理员在服务端 .env 文件中配置</div>
+        </div>
+    </div>
+
     <!-- Loading Overlay -->
     <div class="loading-overlay hidden" id="loadingOverlay">
         <div class="loading-spinner">

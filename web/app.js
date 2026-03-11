@@ -22,6 +22,8 @@ function showApiKeyPrompt() {
     if (key !== null) {
         setApiKey(key);
         showToast('API Key 已保存', 'success');
+        hideAuthModal();
+        loadDashboardStats();
     }
 }
 
@@ -107,7 +109,7 @@ async function apiCall(method, path, body = null) {
     if (body) opts.body = JSON.stringify(body);
     const resp = await fetch(API + path, opts);
     if (resp.status === 401 || resp.status === 403) {
-        showToast('API Key 无效或缺失，请点击右上角设置', 'error');
+        showAuthModal();
         throw new Error('认证失败');
     }
     if (!resp.ok) {
@@ -115,6 +117,52 @@ async function apiCall(method, path, body = null) {
         throw new Error(err.detail || 'Request failed');
     }
     return resp.json();
+}
+
+function showAuthModal() {
+    const modal = document.getElementById('authModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        const input = document.getElementById('authKeyInput');
+        if (input) { input.value = ''; input.focus(); }
+    }
+}
+
+function hideAuthModal() {
+    const modal = document.getElementById('authModal');
+    if (modal) modal.classList.add('hidden');
+    document.getElementById('authError').classList.add('hidden');
+}
+
+async function submitAuthKey() {
+    const input = document.getElementById('authKeyInput');
+    const key = input.value.trim();
+    if (!key) {
+        document.getElementById('authError').textContent = '请输入 API Key';
+        document.getElementById('authError').classList.remove('hidden');
+        return;
+    }
+
+    setApiKey(key);
+
+    try {
+        const headers = { 'Content-Type': 'application/json', 'X-API-Key': key };
+        const resp = await fetch(API + '/knowledge/stats', { headers });
+        if (resp.status === 401 || resp.status === 403) {
+            document.getElementById('authError').textContent = 'API Key 无效，请重新输入';
+            document.getElementById('authError').classList.remove('hidden');
+            setApiKey('');
+            input.value = '';
+            input.focus();
+            return;
+        }
+        hideAuthModal();
+        showToast('认证成功', 'success');
+        loadDashboardStats();
+    } catch (e) {
+        document.getElementById('authError').textContent = '网络错误，请重试';
+        document.getElementById('authError').classList.remove('hidden');
+    }
 }
 
 function renderMarkdown(text) {
@@ -494,5 +542,34 @@ function escHtml(str) {
 // ============================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadDashboardStats();
+    initApp();
 });
+
+async function initApp() {
+    try {
+        const health = await fetch(API + '/health').then(r => r.json());
+        if (!health.auth_required) {
+            loadDashboardStats();
+            return;
+        }
+
+        const savedKey = getApiKey();
+        if (!savedKey) {
+            showAuthModal();
+            return;
+        }
+
+        const headers = { 'Content-Type': 'application/json', 'X-API-Key': savedKey };
+        const resp = await fetch(API + '/knowledge/stats', { headers });
+        if (resp.status === 401 || resp.status === 403) {
+            setApiKey('');
+            showAuthModal();
+            return;
+        }
+
+        loadDashboardStats();
+    } catch (e) {
+        console.warn('Init check failed:', e);
+        loadDashboardStats();
+    }
+}

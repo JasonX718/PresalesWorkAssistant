@@ -22,8 +22,13 @@ logger = logging.getLogger(__name__)
 AUTH_EXEMPT_PATHS = {
     "/",
     "/ui",
+    "/ui/",
+    "/health",
+    "/health/",
     "/docs",
+    "/docs/",
     "/redoc",
+    "/redoc/",
     "/openapi.json",
 }
 
