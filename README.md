@@ -124,9 +124,8 @@ zstack-helper/
 ├── requirements.txt                 # Python 依赖（兼容 pip 安装）
 ├── .env.example                     # 环境变量模板
 ├── .gitignore
-├── AGENTS.md                        # AI Agent 开发规范
+├── AGENTS.md                        # AI Agent 开发规范 + 运维安全约束
 ├── mise.toml                        # 工具版本管理（Python 3.12）
-├── opencode.jsonc                   # AI Agent 安全约束配置
 │
 ├── .vscode/                         # 编辑器配置
 │   ├── settings.json                # Ruff 格式化 + 编辑器规则

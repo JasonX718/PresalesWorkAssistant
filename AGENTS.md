@@ -184,6 +184,40 @@ zstack-helper/
 - Required: `OPENAI_API_KEY`
 - Optional: `AUTH_API_KEY` (enables API key auth)
 
+## Operational Safety Constraints
+
+> **当 Agent 被用于辅助 ZStack/K8s 运维操作时，必须严格遵守以下安全约束。**
+
+### 🔴 禁止操作（任何情况下都不能执行）
+
+- 删除生产环境的虚拟机、云盘、镜像、网络等资源
+- 修改生产集群的网络配置（IP/VLAN/路由）
+- 重置或格式化存储
+- 删除 K8s namespace/PV/PVC 等持久化资源
+- 执行未经确认的数据库 DROP/TRUNCATE 操作
+
+### 🟡 需要二次确认的操作
+
+- 重启任何服务（ZStack Management Node/MySQL/RabbitMQ/K8s 组件）
+- 修改配置文件（zstack.properties/my.cnf 等）
+- 执行 kubectl delete/drain/cordon 操作
+- 清理日志或临时文件
+- 扩缩容操作
+
+### 🟢 允许的安全操作
+
+- 查看日志、状态、配置（只读操作）
+- 执行诊断命令（zstack-cli query\*/describe\*、kubectl get/describe/logs）
+- 搜索知识库
+- 生成排查方案、文档、报告（只生成不执行）
+
+### 输出规范
+
+- 结论先行，再给解释
+- 排查方案必须标注风险等级
+- 涉及操作步骤时，明确标注哪些步骤需要人工确认
+- 给出回退方案
+
 ## Development Principles
 
 > **These principles apply to ALL code changes.**
