@@ -1,0 +1,40 @@
+{
+  // === Python ===
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "explicit",
+      "source.organizeImports.ruff": "explicit"
+    }
+  },
+
+  // === Ruff ===
+  "ruff.lineLength": 120,
+
+  // === Editor ===
+  "editor.rulers": [120],
+  "editor.tabSize": 4,
+  "editor.insertSpaces": true,
+  "editor.renderWhitespace": "boundary",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.eol": "\n",
+
+  // === File Associations ===
+  "files.associations": {
+    "*.jsonc": "jsonc"
+  },
+
+  // === Exclude ===
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "data/chroma_db": true,
+    ".ruff_cache": true
+  },
+
+  // === Python Path ===
+  "python.defaultInterpreterPath": ".venv/bin/python"
+}
