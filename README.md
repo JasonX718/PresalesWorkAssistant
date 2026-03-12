@@ -51,14 +51,15 @@ AI Work Assistant 是一个基于 RAG（检索增强生成）的智能工作助�
 
 ```bash
 # 克隆项目
-cd ai-work-assistant
+cd zstack-helper
 
-# 创建虚拟环境
+# 方式一：使用 uv（推荐）
+uv sync                   # 自动创建 .venv 并安装依赖
+
+# 方式二：传统 pip
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
 # venv\Scripts\activate   # Windows
-
-# 安装依赖
 pip install -r requirements.txt
 ```
 
@@ -116,12 +117,20 @@ python examples/example_requests.py
 ## 项目结构
 
 ```
-ai-work-assistant/
+zstack-helper/
 ├── main.py                          # 应用入口（API + 前端静态服务）
 ├── config.py                        # 全局配置
-├── requirements.txt                 # Python 依赖
+├── pyproject.toml                   # 依赖 + 工具配置（ruff/pytest/mypy）
+├── requirements.txt                 # Python 依赖（兼容 pip 安装）
 ├── .env.example                     # 环境变量模板
 ├── .gitignore
+├── AGENTS.md                        # AI Agent 开发规范
+├── mise.toml                        # 工具版本管理（Python 3.12）
+├── opencode.jsonc                   # AI Agent 安全约束配置
+│
+├── .vscode/                         # 编辑器配置
+│   ├── settings.json                # Ruff 格式化 + 编辑器规则
+│   └── extensions.json              # 推荐插件
 │
 ├── web/                             # Web 前端（SPA）
 │   ├── index.html                   # 主页面
@@ -132,7 +141,7 @@ ai-work-assistant/
 │   ├── auth.py                      # API Key 认证中间件
 │   ├── api/                         # FastAPI 路由
 │   │   ├── knowledge.py             # 知识库 API（含文件上传）
-│   │   ├── scenarios.py             # 场景模块 API
+│   │   ├── scenarios.py             # 场景模块 API（动态路由）
 │   │   └── health.py                # 健康检查
 │   │
 │   ├── services/                    # 业务逻辑层
@@ -165,15 +174,7 @@ ai-work-assistant/
 │   │
 │   ├── prompt_templates/            # Prompt 模板
 │   │   ├── output_modes.py          # 输出模式定义
-│   │   ├── troubleshooting.py
-│   │   ├── tech_qa.py
-│   │   ├── customer_reply.py
-│   │   ├── weekly_report.py
-│   │   ├── briefing.py
-│   │   ├── training.py
-│   │   ├── demo_prep.py
-│   │   ├── poc_support.py
-│   │   └── escalation.py
+│   │   └── *.py                     # 各场景 Prompt
 │   │
 │   ├── models/                      # 数据模型
 │   │   ├── common.py                # 通用模型
@@ -436,6 +437,9 @@ curl -X POST http://localhost:8000/scenario/tech_qa \
 | HTTP客户端 | httpx | 异步 HTTP 请求 |
 | 配置管理 | pydantic-settings | 类型安全配置 |
 | 去重 | xxhash | 高性能内容哈希 |
+| 包管理 | uv / pip | uv 推荐，pip 兼容 |
+| 代码质量 | ruff | Lint + Format（替代 flake8/black/isort） |
+| 工具版本 | mise | Python 3.12 版本锁定 |
 
 ## 设计原则
 
@@ -454,8 +458,10 @@ curl -X POST http://localhost:8000/scenario/tech_qa \
 2. 在 `app/scenario_modules/` 创建模块（继承 `BaseScenarioModule`）
 3. 在 `app/models/scenarios.py` 添加输入模型
 4. 在 `app/models/common.py` 的 `ScenarioType` 枚举添加类型
-5. 在 `app/router/scenario_router.py` 注册模块
-6. 在 `app/api/scenarios.py` 添加 API 端点
+5. 在 `app/router/scenario_router.py` 注册模块 + 关键词
+6. 在 `app/api/scenarios.py` 的 `SCENARIO_INPUT_MODELS` 字典中注册模型
+
+> **注**：API 端点 `POST /scenario/{scenario_type}` 采用动态路由，无需为每个场景单独编写 endpoint。
 
 ### 添加新的知识来源
 

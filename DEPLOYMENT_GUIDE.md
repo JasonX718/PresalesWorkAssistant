@@ -32,7 +32,7 @@
 | 内存 | 4 GB+ | ChromaDB + FastAPI 运行所需 |
 | 磁盘 | 40 GB+ | 系统 + 项目 + ChromaDB 数据 + 日志 |
 | 操作系统 | Ubuntu 22.04 LTS / CentOS 8+ / Debian 12 | 推荐 Ubuntu 22.04 |
-| Python | 3.11+ | 必须 |
+| Python | 3.12+ | 必须（推荐通过 mise 管理版本） |
 | 网络 | 公网 IP + 开放 80/443 端口 | 浏览器访问需要 |
 
 ### 网络要求
@@ -56,11 +56,11 @@ sudo apt update && sudo apt upgrade -y
 # 安装基础工具
 sudo apt install -y build-essential curl wget git nginx certbot python3-certbot-nginx
 
-# 安装 Python 3.11+
-sudo apt install -y python3.11 python3.11-venv python3.11-dev python3-pip
+# 安装 Python 3.12+
+sudo apt install -y python3.12 python3.12-venv python3.12-dev python3-pip
 
 # 验证版本
-python3.11 --version
+python3.12 --version
 nginx -v
 ```
 
@@ -69,7 +69,7 @@ nginx -v
 ```bash
 sudo dnf update -y
 sudo dnf install -y gcc make curl wget git nginx certbot python3-certbot-nginx
-sudo dnf install -y python3.11 python3.11-devel python3.11-pip
+sudo dnf install -y python3.12 python3.12-devel python3.12-pip
 ```
 
 ### 创建应用用户（推荐）
@@ -119,11 +119,13 @@ rm ~/ai-work-assistant.tar.gz
 ```bash
 cd ~/ai-work-assistant
 
-# 创建虚拟环境
-python3.11 -m venv venv
-source venv/bin/activate
+# 方式一：使用 uv（推荐，更快）
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv sync
 
-# 安装依赖
+# 方式二：传统 pip
+python3.12 -m venv venv
+source venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 
@@ -643,7 +645,7 @@ echo "0 2 * * * tar czf /home/aiassist/backups/chroma-\$(date +\%Y\%m\%d).tar.gz
 cd ~/ai-work-assistant
 git pull origin main
 source venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt    # 或 uv sync
 sudo systemctl restart ai-work-assistant
 
 # 方式二：手动上传更新
@@ -745,8 +747,8 @@ sudo systemctl enable ai-work-assistant
 
 部署完成后，逐项验证：
 
-- [ ] Python 3.11+ 已安装
-- [ ] 虚拟环境已创建，依赖已安装
+- [ ] Python 3.12+ 已安装
+- [ ] 依赖已安装（`uv sync` 或 `pip install -r requirements.txt`）
 - [ ] `.env` 文件已配置（OpenAI API Key）
 - [ ] `APP_HOST=127.0.0.1`（生产环境）
 - [ ] Systemd 服务已创建并 enabled

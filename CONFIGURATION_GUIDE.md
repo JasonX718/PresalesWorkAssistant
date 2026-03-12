@@ -32,8 +32,8 @@
 
 ### 1.2 Python 版本
 
-- **最低要求**：Python 3.10
-- **推荐版本**：Python 3.11 或 3.12
+- **最低要求**：Python 3.12
+- **推荐版本**：Python 3.12（通过 `mise.toml` 锁定）
 
 检查版本：
 
@@ -41,6 +41,9 @@
 python --version
 # 或
 python3 --version
+
+# 使用 mise 自动管理版本（推荐）
+mise install    # 自动安装 mise.toml 中指定的 Python 3.12
 ```
 
 ### 1.3 硬件要求
@@ -65,9 +68,18 @@ python3 --version
 
 ### 2.1 第一步：创建虚拟环境
 
+**方式一：使用 uv（推荐）**
+
+```bash
+cd zstack-helper
+uv sync    # 自动创建 .venv 并安装所有依赖
+```
+
+**方式二：传统 pip**
+
 ```bash
 # 进入项目目录
-cd ai-work-assistant
+cd zstack-helper
 
 # 创建虚拟环境
 python3 -m venv venv
@@ -81,10 +93,13 @@ source venv/bin/activate        # Linux / macOS
 ### 2.2 第二步：安装依赖
 
 ```bash
+# 如果使用 uv，第一步已完成依赖安装，跳过此步
+
+# 如果使用 pip：
 pip install -r requirements.txt
 ```
 
-依赖清单概要：
+依赖清单概要（详见 `pyproject.toml`）：
 
 | 类别 | 包名 | 用途 |
 |------|------|------|

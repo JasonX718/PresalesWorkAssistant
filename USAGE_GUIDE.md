@@ -21,6 +21,11 @@
 
 ```bash
 # 确保已完成配置（参考《系统配置指南》）
+
+# 方式一：使用 uv
+uv run python main.py
+
+# 方式二：传统方式
 python main.py
 ```
 
