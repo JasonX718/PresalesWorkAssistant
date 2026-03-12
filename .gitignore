@@ -15,13 +15,14 @@ env/
 
 # Environment
 .env
+.env.*
+!.env.example
 
 # ChromaDB
 data/chroma_db/
 
 # IDE
 .idea/
-.vscode/
 *.swp
 *.swo
 *~
@@ -38,3 +39,12 @@ logs/
 .pytest_cache/
 htmlcov/
 .coverage
+
+# Ruff
+.ruff_cache/
+
+# MyPy
+.mypy_cache/
+
+# uv
+uv.lock

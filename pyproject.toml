@@ -1,0 +1,105 @@
+[project]
+name = "zstack-helper"
+version = "1.0.0"
+description = "AI Work Assistant — 基于 RAG 的智能工作助手，面向 ZStack 技术岗位人员"
+requires-python = ">=3.12"
+readme = "README.md"
+license = { text = "MIT" }
+
+dependencies = [
+    # --- Web Framework ---
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.34.0",
+    "python-multipart>=0.0.18",
+    # --- LLM & Embeddings ---
+    "openai>=1.60.0",
+    "langchain>=0.3.0",
+    "langchain-openai>=0.3.0",
+    "langchain-community>=0.3.0",
+    "langchain-text-splitters>=0.3.0",
+    # --- Vector Database ---
+    "chromadb>=0.6.0",
+    # --- Document Processing ---
+    "trafilatura>=2.0.0",
+    "beautifulsoup4>=4.12.0",
+    "markdown>=3.7",
+    "python-docx>=1.1.0",
+    # --- HTTP & Network ---
+    "httpx>=0.28.0",
+    # --- Data & Utils ---
+    "pydantic>=2.10.0",
+    "pydantic-settings>=2.7.0",
+    "python-dotenv>=1.0.0",
+    # --- Hashing ---
+    "xxhash>=3.5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.25.0",
+    "ruff>=0.11.0",
+    "mypy>=1.14.0",
+    "httpx",  # for TestClient
+]
+
+[project.scripts]
+dev = "uvicorn main:app --reload --host 0.0.0.0 --port 8000"
+
+# =============================================================================
+# Ruff — Linter + Formatter (replaces flake8, isort, black)
+# =============================================================================
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort (import sorting)
+    "N",    # pep8-naming
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "SIM",  # flake8-simplify
+    "RUF",  # ruff-specific rules
+    "T20",  # flake8-print (no print statements)
+    "PTH",  # flake8-use-pathlib
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "B008",   # do not perform function calls in argument defaults (FastAPI Depends)
+    "RUF012", # mutable class attributes (Pydantic models)
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "config"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+# =============================================================================
+# Pytest
+# =============================================================================
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+# =============================================================================
+# MyPy (optional strict type checking)
+# =============================================================================
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false  # gradual adoption
+ignore_missing_imports = true
